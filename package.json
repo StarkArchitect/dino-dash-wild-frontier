@@ -1,0 +1,21 @@
+{
+  "name": "dino-dash-wild-frontier",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "three": "^0.186.1"
+  },
+  "devDependencies": {
+    "@types/three": "^0.186.1",
+    "typescript": "^5.9.3",
+    "vite": "^6.4.1",
+    "vitest": "^3.2.4"
+  }
+}

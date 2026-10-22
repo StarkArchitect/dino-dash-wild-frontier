@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Dino Dash — Wild Frontier</title>
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- 3D Canvas Container -->
+  <div id="game-container"></div>
+
+  <!-- UI Overlay System -->
+  <div id="ui-layer">
+    <!-- START / TITLE SCREEN -->
+    <div id="title-screen" class="ui-screen active">
+      <div class="screen-backdrop"></div>
+      <div class="title-content">
+        <div class="badge-tag">ENDLESS 3D RUNNER</div>
+        <h1 class="game-logo">
+          <span class="logo-top">DINO DASH</span>
+          <span class="logo-sub">WILD FRONTIER</span>
+        </h1>
+        <p class="tagline">Survive the prehistoric badlands • Switch perspectives in real-time</p>
+        
+        <div class="title-dino-badge">
+          <div class="stat-pill"><span class="icon">🏆</span> BEST RUN: <strong id="title-best-score">0</strong> PTS</div>
+          <div class="stat-pill"><span class="icon">📍</span> RECORD: <strong id="title-best-distance">0</strong> M</div>
+          <div class="stat-pill wallet-pill"><span class="icon">🪙</span> WALLET: <strong id="title-wallet-coins">0</strong> COINS</div>
+        </div>
+
+        <div class="menu-actions">
+          <button id="btn-play" class="btn btn-primary pulse">
+            <span class="btn-icon">▶</span> START EXPEDITION
+          </button>
+          <div class="action-row">
+            <button id="btn-open-shop" class="btn btn-gold">
+              <span class="icon">🦖</span> DINO SHOP & SKINS
+            </button>
+            <button id="btn-camera-select" class="btn btn-secondary">
+              <span class="icon">🎥</span> CAMERA: <span id="title-cam-label">SIDE VIEW</span>
+            </button>
+            <button id="btn-open-settings" class="btn btn-secondary">
+              <span class="icon">⚙️</span> SETTINGS
+            </button>
+          </div>
+        </div>
+
+        <div class="controls-card">
+          <div class="controls-title">EXPEDITION CONTROLS</div>
+          <div class="controls-grid">
+            <div class="ctrl-item"><kbd>SPACE</kbd> / <kbd>↑</kbd> <span>Jump Obstacles</span></div>
+            <div class="ctrl-item"><kbd>↓</kbd> / <kbd>S</kbd> <span>Crouch / Duck Flyers</span></div>
+            <div class="ctrl-item"><kbd>V</kbd> <span>Switch Camera (Side/3rd Person)</span></div>
+            <div class="ctrl-item"><kbd>ESC</kbd> <span>Pause Expedition</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- IN-GAME HUD -->
+    <div id="hud-screen" class="ui-screen">
+      <!-- Top Left: Stats -->
+      <div class="hud-top-left">
+        <div class="hud-stat-box score-box">
+          <div class="hud-stat-label">SCORE</div>
+          <div class="hud-stat-val" id="hud-score">0</div>
+        </div>
+        <div class="hud-stat-box coin-box">
+          <div class="hud-stat-label">COINS</div>
+          <div class="hud-stat-val"><span class="coin-icon">🪙</span> <span id="hud-coins">0</span></div>
+        </div>
+        <div class="hud-stat-box">
+          <div class="hud-stat-label">DISTANCE</div>
+          <div class="hud-stat-val"><span id="hud-distance">0</span> <small>m</small></div>
+        </div>
+        <div class="hud-stat-box speed-box">
+          <div class="hud-stat-label">SPEED</div>
+          <div class="hud-stat-val"><span id="hud-speed">15</span> <small>km/h</small></div>
+        </div>
+      </div>
+
+      <!-- Top Center: Camera Mode Toggle Pill & Shield Status -->
+      <div class="hud-top-center">
+        <button id="hud-cam-toggle" class="camera-pill-btn" title="Toggle Side / 3rd Person View (V)">
+          <span class="cam-icon">🎥</span>
+          <span id="hud-cam-mode-text">MODE: SIDE-VIEW [V]</span>
+        </button>
+        <div id="hud-shield-box" class="hud-badge shield-badge hidden" title="Defensive Shield Active">
+          🛡️ SHIELD: <strong id="hud-shield-count">1</strong>
+        </div>
+      </div>
+
+      <!-- Top Right: Quick Controls -->
+      <div class="hud-top-right">
+        <div class="hud-badge hi-badge">
+          <span>HI</span> <strong id="hud-high-score">0</strong>
+        </div>
+        <button id="btn-mute" class="hud-circle-btn" title="Mute/Unmute (M)">🔊</button>
+        <button id="btn-pause" class="hud-circle-btn" title="Pause Game (ESC)">⏸</button>
+      </div>
+
+      <!-- Bottom Touch Controls (for touch/mouse) -->
+      <div class="hud-touch-controls">
+        <button id="touch-jump" class="touch-btn jump-btn">
+          <span>JUMP</span>
+          <small>SPACE / ↑</small>
+        </button>
+        <button id="touch-crouch" class="touch-btn crouch-btn">
+          <span>DUCK</span>
+          <small>ARROW ↓</small>
+        </button>
+      </div>
+    </div>
+
+    <!-- PAUSE MENU -->
+    <div id="pause-screen" class="ui-screen modal-overlay">
+      <div class="modal-card">
+        <h2>EXPEDITION PAUSED</h2>
+        <div class="modal-stats">
+          <div>Distance: <strong id="pause-dist">0m</strong></div>
+          <div>Current Score: <strong id="pause-score">0</strong></div>
+          <div>Coins Collected: <strong id="pause-coins">0</strong> 🪙</div>
+        </div>
+        <div class="modal-buttons">
+          <button id="btn-resume" class="btn btn-primary">RESUME (ESC)</button>
+          <button id="btn-pause-shop" class="btn btn-gold">🦖 DINO SHOP & SKINS</button>
+          <button id="btn-pause-restart" class="btn btn-secondary">RESTART (R)</button>
+          <button id="btn-pause-settings" class="btn btn-secondary">SETTINGS</button>
+          <button id="btn-pause-menu" class="btn btn-secondary text-danger">RETURN TO MENU</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS MODAL -->
+    <div id="settings-screen" class="ui-screen modal-overlay">
+      <div class="modal-card settings-card">
+        <h2>EXPEDITION SETTINGS</h2>
+        
+        <div class="settings-group">
+          <label>Graphics Preset (Targeted for Intel UHD)</label>
+          <div class="btn-toggle-group" id="preset-selector">
+            <button class="toggle-btn" data-preset="low">LOW</button>
+            <button class="toggle-btn active" data-preset="medium">MEDIUM (Intel UHD)</button>
+            <button class="toggle-btn" data-preset="high">HIGH</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label>Camera Mode</label>
+          <div class="btn-toggle-group" id="camera-pref-selector">
+            <button class="toggle-btn active" data-cam="side">SIDE VIEW</button>
+            <button class="toggle-btn" data-cam="third">3RD PERSON</button>
+          </div>
+        </div>
+
+        <div class="settings-group">
+          <label>Third-Person Field of View: <span id="fov-val">70</span>°</label>
+          <input type="range" id="slider-fov" min="55" max="85" value="70" step="1">
+        </div>
+
+        <div class="settings-group">
+          <label>Sound FX Volume: <span id="sfx-val">80</span>%</label>
+          <input type="range" id="slider-sfx" min="0" max="100" value="80" step="5">
+        </div>
+
+        <div class="settings-group">
+          <label>Desert Ambient Wind Volume: <span id="amb-val">60</span>%</label>
+          <input type="range" id="slider-amb" min="0" max="100" value="60" step="5">
+        </div>
+
+        <div class="modal-buttons">
+          <button id="btn-close-settings" class="btn btn-primary">SAVE & CLOSE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- GAME OVER SCREEN -->
+    <div id="game-over-screen" class="ui-screen modal-overlay">
+      <div class="modal-card game-over-card">
+        <div class="danger-badge">FOSSILIZED!</div>
+        <h2>EXPEDITION ENDED</h2>
+        
+        <div class="go-stats-grid">
+          <div class="go-stat">
+            <span class="label">FINAL SCORE</span>
+            <span class="value" id="go-score">0</span>
+          </div>
+          <div class="go-stat">
+            <span class="label">COINS EARNED</span>
+            <span class="value highlight-gold" id="go-coins">+0 🪙</span>
+          </div>
+          <div class="go-stat">
+            <span class="label">DISTANCE</span>
+            <span class="value" id="go-distance">0 m</span>
+          </div>
+          <div class="go-stat">
+            <span class="label">WALLET TOTAL</span>
+            <span class="value highlight" id="go-wallet">0 🪙</span>
+          </div>
+        </div>
+
+        <div id="new-record-badge" class="new-record-banner hidden">
+          🌟 NEW PERSONAL RECORD! 🌟
+        </div>
+
+        <div class="modal-buttons">
+          <button id="btn-restart" class="btn btn-primary pulse">RETRY EXPEDITION (R)</button>
+          <button id="btn-go-shop" class="btn btn-gold">🦖 DINO SHOP & SKINS</button>
+          <button id="btn-go-menu" class="btn btn-secondary">MAIN MENU</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- DINO SHOP & SKINS MODAL -->
+    <div id="shop-screen" class="ui-screen modal-overlay">
+      <div class="modal-card shop-modal-card">
+        <div class="shop-header">
+          <div class="shop-title-wrap">
+            <h2>🦖 PALEO-ARCHIVE & DINO SHOP</h2>
+            <div class="shop-subtitle">Unlock distinct prehistoric species with custom perks & attributes</div>
+          </div>
+          <div class="shop-header-right">
+            <div class="wallet-badge">
+              <span class="coin-icon">🪙</span>
+              <span id="shop-wallet-val">0</span>
+              <small>COINS</small>
+            </div>
+            <button id="btn-close-shop" class="close-x-btn" title="Close Shop">✕</button>
+          </div>
+        </div>
+
+        <div class="shop-content-grid">
+          <!-- Left: 3D Preview Canvas with Pedestal -->
+          <div class="shop-preview-pane">
+            <canvas id="shop-preview-canvas"></canvas>
+            <div class="preview-hint">⟲ Auto-rotating 3D Preview</div>
+          </div>
+
+          <!-- Right: Dinosaur Specs & Actions -->
+          <div class="shop-details-pane">
+            <div class="dino-header-row">
+              <div class="dino-header-top">
+                <span id="shop-dino-rarity" class="rarity-badge rarity-common">COMMON</span>
+                <span id="shop-dino-species" class="species-tag">Tyrannosaurid Raptor</span>
+              </div>
+              <h3 id="shop-dino-name">Classic Rex</h3>
+            </div>
+
+            <p id="shop-dino-desc" class="dino-desc"></p>
+
+            <div class="perk-box">
+              <span class="perk-label">⚡ SPECIAL ABILITY:</span>
+              <span id="shop-dino-special" class="perk-text">None</span>
+            </div>
+
+            <!-- Attribute Comparison Bars -->
+            <div class="stats-matrix">
+              <div class="stat-row">
+                <span class="stat-name">Sprint Velocity</span>
+                <div class="stat-bar-track"><div id="stat-speed-bar" class="stat-bar-fill"></div></div>
+                <span id="stat-speed-val" class="stat-val">100%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">Jump Apex Height</span>
+                <div class="stat-bar-track"><div id="stat-jump-bar" class="stat-bar-fill"></div></div>
+                <span id="stat-jump-val" class="stat-val">100%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">Coin Magnet Radius</span>
+                <div class="stat-bar-track"><div id="stat-magnet-bar" class="stat-bar-fill"></div></div>
+                <span id="stat-magnet-val" class="stat-val">100%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">Coin Earnings Boost</span>
+                <div class="stat-bar-track"><div id="stat-coins-bar" class="stat-bar-fill"></div></div>
+                <span id="stat-coins-val" class="stat-val">100%</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-name">Score Multiplier</span>
+                <div class="stat-bar-track"><div id="stat-score-bar" class="stat-bar-fill"></div></div>
+                <span id="stat-score-val" class="stat-val">100%</span>
+              </div>
+              <div class="stat-row stat-shield-row">
+                <span class="stat-name">Defensive Shield</span>
+                <span id="stat-shield-val" class="stat-val-text">Standard (0 Defenses)</span>
+              </div>
+            </div>
+
+            <div class="shop-action-box">
+              <button id="btn-shop-action" class="btn btn-primary pulse">EQUIP</button>
+              <div id="shop-action-msg" class="action-msg"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Selector Carousel -->
+        <div class="shop-carousel-container">
+          <div class="carousel-label">PREHISTORIC COLLECTION (8 DISTINCT SPECIES)</div>
+          <div id="shop-carousel-track" class="carousel-track">
+            <!-- Populated dynamically via ShopModal -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FPS & Performance Diagnostic Pill (bottom-left) -->
+    <div id="perf-pill" class="perf-pill">
+      <span id="fps-counter">60 FPS</span> • <span id="preset-label">UHD Medium</span>
+    </div>
+  </div>
+
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
