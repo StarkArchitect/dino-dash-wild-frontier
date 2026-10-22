@@ -5,7 +5,7 @@
 [![Tests: 23 Passed](https://img.shields.io/badge/Vitest-23%20Passed-brightgreen)](file:///d:/Dragon%20game/src/tests)
 [![Platform: WebGL / HTML5](https://img.shields.io/badge/Platform-WebGL%20%7C%20HTML5-blue)](index.html)
 [![Target: Intel UHD Graphics 60 FPS](https://img.shields.io/badge/Target-Intel%20UHD%2060%20FPS-orange)](src/graphics/RendererManager.ts)
-
+[![Browser Play Link](https://starkarchitect.github.io/dino-dash-wild-frontier)
 **Dino Dash — Wild Frontier** is a browser-based 3D endless runner built with **TypeScript**, **Three.js**, and **Vite**. Inspired by the classic dinosaur runner, it elevates the gameplay loop into an indie-grade 3D experience featuring **real-time switchable camera perspectives** (Cinematic Side-View and Third-Person Chase View), an articulated PBR-textured dinosaur character with 8 unlockable species, 3D collectible coins, a Paleo-Archive shop with interactive 3D rotating preview, dynamic canyon environments with Day/Dusk/Night cycles, responsive physics, procedural Web Audio sound synthesis, and graphics optimization tailored for **Intel UHD integrated graphics**.
 
 ---
